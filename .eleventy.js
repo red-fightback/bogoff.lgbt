@@ -54,8 +54,8 @@ const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 const localImages = require("./third_party/eleventy-plugin-local-images/.eleventy.js");
 const CleanCSS = require("clean-css");
-const data = require("./_data/metadata.json");
-const GA_ID = data.googleAnalyticsId;
+const GA_ID = require("./_data/metadata.json").googleAnalyticsId;
+const { cspDevMiddleware } = require("./_11ty/apply-csp.js");
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(pluginRss);
@@ -77,21 +77,21 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(require("./_11ty/apply-csp.js"));
   eleventyConfig.setDataDeepMerge(true);
   eleventyConfig.addLayoutAlias("post", "layouts/post.njk");
-  eleventyConfig.addNunjucksAsyncFilter("addHash", function (
-    absolutePath,
-    callback
-  ) {
-    readFile(`_site${absolutePath}`, {
-      encoding: "utf-8",
-    })
-      .then((content) => {
-        return hasha.async(content);
+  eleventyConfig.addNunjucksAsyncFilter(
+    "addHash",
+    function (absolutePath, callback) {
+      readFile(`_site${absolutePath}`, {
+        encoding: "utf-8",
       })
-      .then((hash) => {
-        callback(null, `${absolutePath}?hash=${hash.substr(0, 10)}`);
-      })
-      .catch((error) => callback(error));
-  });
+        .then((content) => {
+          return hasha.async(content);
+        })
+        .then((hash) => {
+          callback(null, `${absolutePath}?hash=${hash.substr(0, 10)}`);
+        })
+        .catch((error) => callback(error));
+    }
+  );
 
   async function lastModifiedDate(filename) {
     try {
@@ -112,22 +112,22 @@ module.exports = function (eleventyConfig) {
   // Cache the lastModifiedDate call because shelling out to git is expensive.
   // This means the lastModifiedDate will never change per single eleventy invocation.
   const lastModifiedDateCache = new Map();
-  eleventyConfig.addNunjucksAsyncFilter("lastModifiedDate", function (
-    filename,
-    callback
-  ) {
-    const call = (result) => {
-      result.then((date) => callback(null, date));
-      result.catch((error) => callback(error));
-    };
-    const cached = lastModifiedDateCache.get(filename);
-    if (cached) {
-      return call(cached);
+  eleventyConfig.addNunjucksAsyncFilter(
+    "lastModifiedDate",
+    function (filename, callback) {
+      const call = (result) => {
+        result.then((date) => callback(null, date));
+        result.catch((error) => callback(error));
+      };
+      const cached = lastModifiedDateCache.get(filename);
+      if (cached) {
+        return call(cached);
+      }
+      const promise = lastModifiedDate(filename);
+      lastModifiedDateCache.set(filename, promise);
+      call(promise);
     }
-    const promise = lastModifiedDate(filename);
-    lastModifiedDateCache.set(filename, promise);
-    call(promise);
-  });
+  );
 
   eleventyConfig.addFilter("encodeURIComponent", function (str) {
     return encodeURIComponent(str);
@@ -165,14 +165,15 @@ module.exports = function (eleventyConfig) {
     return array.slice(0, n);
   });
 
+  eleventyConfig.addCollection("posts", function (collectionApi) {
+    return collectionApi.getFilteredByTag("posts");
+  });
   eleventyConfig.addCollection("tagList", require("./_11ty/getTagList"));
-
   eleventyConfig.addPassthroughCopy("img");
   eleventyConfig.addPassthroughCopy("css");
   // We need to copy cached.js only if GA is used
   eleventyConfig.addPassthroughCopy(GA_ID ? "js" : "js/*[!cached].*");
   eleventyConfig.addPassthroughCopy("fonts");
-  eleventyConfig.addPassthroughCopy("_headers");
 
   // We need to rebuild upon JS change to update the CSP.
   eleventyConfig.addWatchTarget("./js/");
@@ -196,6 +197,7 @@ module.exports = function (eleventyConfig) {
 
   // Browsersync Overrides
   eleventyConfig.setBrowserSyncConfig({
+    middleware: cspDevMiddleware,
     callbacks: {
       ready: function (err, browserSync) {
         const content_404 = fs.readFileSync("_site/404.html");
@@ -209,6 +211,22 @@ module.exports = function (eleventyConfig) {
     },
     ui: false,
     ghostMode: false,
+  });
+
+  // Run me before the build starts
+  eleventyConfig.on("beforeBuild", () => {
+    // Copy _header to dist
+    // Don't use addPassthroughCopy to prevent apply-csp from running before the _header file has been copied
+    try {
+      const headers = fs.readFileSync("./_headers", { encoding: "utf-8" });
+      fs.mkdirSync("./_site", { recursive: true });
+      fs.writeFileSync("_site/_headers", headers);
+    } catch (error) {
+      console.log(
+        "[beforeBuild] Something went wrong with the _headers file\n",
+        error
+      );
+    }
   });
 
   return {
