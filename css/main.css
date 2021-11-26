@@ -1,7 +1,13 @@
 /* Color customization */
 :root {
-  --primary: #f9c412;
-  --primary-dark: #e7bf60;
+  --primary: #e0e;
+  --primary-dark: #222;
+  --secondary: #eeee00;
+  --secondary-light: #dddddd;
+  
+  /* Fonts */
+  --font-sans-serif: 'Octarine Light', sans-serif;
+  --font-serif: 'Riffic', Georgia, Times, serif;
 }
 
 .test-dead-code-elimination-sentinel {
@@ -212,7 +218,63 @@ FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 
 */
+
 @font-face {
+  font-family: 'Octarine';
+  src: url('/fonts/octarine-bold-webfont.woff2') format('woff2'),
+       url('/fonts/octarine-bold-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+@font-face {
+  font-family: 'Riffic';
+  src: url('/fonts/riffic-webfont.woff2') format('woff2'),
+       url('/fonts/riffic-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+/*
+@font-face {
+  font-family: 'Octarine';
+  src: url('/fonts/octarine-lightoblique-webfont.eot');
+  src: url('/fonts/octarine-lightoblique-webfont.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/octarine-lightoblique-webfont.woff2') format('woff2'),
+       url('/fonts/octarine-lightoblique-webfont.woff') format('woff'),
+       url('/fonts/octarine-lightoblique-webfont.ttf') format('truetype'),
+       url('/fonts/octarine-lightoblique-webfont.svg#octarinelight_oblique') format('svg');
+  font-weight: lighter;
+  font-style: italic;
+
+}
+
+@font-face {
+  font-family: 'Octarine';
+  src: url('/fonts/octarine-boldoblique-webfont.eot');
+  src: url('/fonts/octarine-boldoblique-webfont.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/octarine-boldoblique-webfont.woff2') format('woff2'),
+       url('/fonts/octarine-boldoblique-webfont.woff') format('woff'),
+       url('/fonts/octarine-boldoblique-webfont.ttf') format('truetype'),
+       url('/fonts/octarine-boldoblique-webfont.svg#octarineitalic') format('svg');
+  font-weight: normal;
+  font-style: italic;
+
+}*/
+
+@font-face {
+  font-family: 'Octarine Light';
+  src: url('/fonts/octarine-light-webfont.woff2') format('woff2'),
+       url('/fonts/octarine-light-webfont.woff') format('woff');
+  font-weight: lighter;
+  font-style: normal;
+
+}
+
+
+/* @font-face {
   font-family: "Inter UI";
   font-style: normal;
   font-weight: 100;
@@ -345,7 +407,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   font-weight: 900;
   src: url("/fonts/Inter-BlackItalic.woff2") format("woff2"),
     url("/fonts/Inter-BlackItalic.woff") format("woff");
-}
+} */
 
 /* --------------------------------------------------------------------------
 Single variable font.
@@ -367,12 +429,12 @@ BUGS:
   Workaround: Use "Inter UI var alt" for Safari, or explicitly set
   `font-variation-settings:"slnt" DEGREE`.
 */
-@font-face {
+/* @font-face {
   font-family: "Inter UI var";
   font-weight: 100 900;
   font-style: oblique 0deg 10deg;
   src: url("/fonts/Inter.var.woff2") format("woff2");
-}
+} */
 
 /* --------------------------------------------------------------------------
 
@@ -385,7 +447,7 @@ BUGS:
 }
 
 */
-@font-face {
+/* @font-face {
   font-family: "Inter UI var alt";
   font-weight: 100 900;
   font-style: normal;
@@ -398,7 +460,7 @@ BUGS:
   font-style: italic;
   font-named-instance: "Italic";
   src: url("/fonts/Inter-italic.var.woff2") format("woff2");
-}
+} */
 
 /*
 
@@ -811,7 +873,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-family);
+  /* font-family: var(--font-serif); */
+  font-family: Riffic, Georgia, Times, serif;
+  font-weight: normal;
 }
 h2,
 h4,
@@ -852,13 +916,13 @@ dt {
   }
 }
 html {
-  font-family: Inter UI, sans-serif;
-  --font-family: Inter UI, sans-serif;
+  font-family: 'Octarine Light', sans-serif;
+  --font-family: 'Octarine Light', sans-serif;
 }
 @supports (font-variation-settings: normal) {
   html {
-    font-family: Inter UI var alt, sans-serif;
-    --font-family: Inter UI var alt, sans-serif;
+    font-family: 'Octarine Light', sans-serif;
+    --font-family: 'Octarine Light', sans-serif;
   }
 }
 form {
@@ -1292,4 +1356,18 @@ a {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
+}
+
+.bogoff {
+  font-family: Riffic, Georgia, Times, serif;
+  font-weight: normal;
+}
+.bo-bog {
+  color: var(--primary);
+}
+.bo-off {
+  color: var(--secondary);
+}
+.bo-off::after {
+  content: '.';
 }

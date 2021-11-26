@@ -56,12 +56,66 @@ const processImage = async (img) => {
 };
 
 const processImageAttr = async (img, attribute) => {
-  let { distPath, assetPath } = config;
+  let { distPath, assetPath, siteUrl } = config;
 
+  const local = new RegExp(`^${siteUrl}`, 'i');
   const external = /https?:\/\/((?:[\w\d-]+\.)+[\w\d]{2,})/i;
   const imgPath = img.getAttribute(attribute);
 
-  if (external.test(imgPath)) {
+  /*if (local.test(imgPath)) { // internal images
+    try {
+      const localImgPath = imgPath.replace(local, "");
+      
+      // get the filname from the path
+      const pathComponents = localImgPath.split("/");
+
+      // break off cache busting string if there is one
+      let filename = pathComponents[pathComponents.length - 1].split("?");
+      filename = filename[0];
+
+      // generate a unique short hash based on the original file path
+      // this will prevent filename clashes
+      const hash = sh.unique(localImgPath);
+
+      let hashedFilename = `${hash}${path.extname(filename)}`;
+      let outputFilePath = path.join(distPath, localAssetPath, hashedFilename);
+      if (!path.extname(filename) || !fs.existsSync(outputFilePath)) {
+        hashedFilename = null;
+        // image is external so download it.
+        // let imgBuffer = await downloadImage(localImgPath);
+        let imgBuffer = fs.inputFile()
+        if (imgBuffer) {
+          // check if the remote image has a file extension and then hash the filename
+          hashedFilename = !path.extname(filename)
+            ? `${hash}-${getFileType(filename, imgBuffer)}`
+            : `${hash}${path.extname(filename)}`;
+
+          // create the file path from config
+          outputFilePath = path.join(distPath, localAssetPath, hashedFilename);
+
+          // save the file out, and log it to the console
+          await fs.outputFile(outputFilePath, imgBuffer);
+          if (config.verbose) {
+            console.log(
+              `eleventy-plugin-local-images: Saving ${filename} to ${outputFilePath}`
+            );
+          }
+        }
+      }
+
+      if (hashedFilename) {
+        // Update the image with the new file path
+        let href = urlJoin(assetPath, hashedFilename);
+        if (attribute == "content") {
+          href = `${metadata.url}${href}`;
+        }
+        img.setAttribute(attribute, href);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  } else */
+  if (!local.test(imgPath) && external.test(imgPath)) {
     try {
       // get the filname from the path
       const pathComponents = imgPath.split("/");
@@ -111,6 +165,7 @@ const processImageAttr = async (img, attribute) => {
       console.log(error);
     }
   }
+  
 };
 
 const grabRemoteImages = async (rawContent, outputPath) => {
@@ -136,9 +191,9 @@ module.exports = {
     config = Object.assign({}, config, pluginOptions);
 
     // check the required config is present
-    if (!config.assetPath || !config.distPath) {
+    if (!config.assetPath || !config.distPath || !config.siteUrl) {
       throw new Error(
-        "eleventy-plugin-local-images requires that assetPath and distPath are set"
+        "eleventy-plugin-local-images requires that assetPath, siteUrl and distPath are set"
       );
     }
 

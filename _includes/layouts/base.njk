@@ -80,7 +80,9 @@
 
     <main>
       <article>
+        
         {% block article %}
+          <img src="{{ image }}" />
           {{ content | safe }}
         {% endblock %}
 

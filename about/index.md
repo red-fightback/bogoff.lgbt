@@ -7,6 +7,7 @@ eleventyNavigation:
   order: 3
 ---
 
-I am a person that writes stuff.
+<p><strong class="bogoff bo-bog">Bog</strong><strong class="bogoff bo-off">Off</strong> campaign originates with Red Fightback. Red Fightback is dedicated to the revolutionary overthrow of capitalism. We organise in in Scotland, England, and Wales.</p>
 
-This blog template is based on [eleventy-high-performance-blog](https://www.industrialempathy.com/posts/eleventy-high-performance-blog/) which itself is based on [eleventy-base-blog](https://github.com/11ty/eleventy-base-blog).
+You don’t have to know, support, or even like us to get involved with this campaign! What matters here is organising for trans liberation and against restrictions to freely accessing public toilets. This is a fight to claim our rights to health, safety, and dignity — a resistance against the continuing attempts to excise trans people from public existence. 
+To contact us, or for further information, [check out our website](https://redfightback.org).
