@@ -7,7 +7,7 @@ layout: layouts/post.njk
 eleventyNavigation:
   key: Statement
   order: 1
-image: /img/local/bogoff-logo-crop-transparent.png
+image: bogoff-logo-crop-transparent.png
 ---
 
 As of February 2021, the British government has begun an open consultation on “toilet provision for men and women.” In light of the continuous onslaught of aggression against trans bodily sovereignty and public health, this move can be plainly understood as another thinly-disguised attack on transgender and gender-nonconforming people. As violence against us escalates, the government hides its complicity in our oppression behind endless public consultations.
